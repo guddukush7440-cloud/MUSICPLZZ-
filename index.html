@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,17 +25,17 @@ input{flex:1;padding:12px;border-radius:8px;border:0;background:#222;color:#fff;
 <body>
 <h1>🎵 MUSICPLZZ</h1>
 <div class="bar">
-  <input id="q" placeholder="Gaana ya artist search karo...">
-  <button id="go">Search</button>
+<input id="q" placeholder="Gaana ya artist search karo...">
+<button id="go">Search</button>
 </div>
 <div id="msg"></div>
 <div id="list"></div>
 <div id="player">
-  <div id="now">Koi gaana nahi chal raha</div>
-  <button id="prev">⏮</button>
-  <button id="pp">▶</button>
-  <button id="next">⏭</button>
-  <audio id="a"></audio>
+<div id="now">Koi gaana nahi chal raha</div>
+<button id="prev">⏮</button>
+<button id="pp">▶</button>
+<button id="next">⏭</button>
+<audio id="a"></audio>
 </div>
 <script>
 var API='https://api.audius.co/v1';
@@ -45,56 +46,55 @@ var q=document.getElementById('q'),msg=document.getElementById('msg');
 var pp=document.getElementById('pp'),now=document.getElementById('now');
 
 function load(url){
-  msg.textContent='Dhoondh raha hoon...';
-  list.innerHTML='';
-  fetch(url)
-    .then(function(r){return r.json()})
-    .then(function(d){
-      songs=(d.data||[]).filter(function(x){return x.is_streamable!==false});
-      cur=-1;
-      msg.textContent=songs.length?'':'Kuch nahi mila, dusra naam try karo';
-      render();
-    })
-    .catch(function(){msg.textContent='Error aaya. Internet check karo.'});
+msg.textContent='Dhoondh raha hoon...';
+list.innerHTML='';
+fetch(url)
+.then(function(r){return r.json()})
+.then(function(d){
+songs=(d.data||[]).filter(function(x){return x.is_streamable!==false});
+cur=-1;
+msg.textContent=songs.length?'':'Kuch nahi mila, dusra naam try karo';
+render();
+})
+.catch(function(){msg.textContent='Error aaya. Internet check karo.'});
 }
 function search(){
-  var t=q.value.trim();
-  if(!t)return;
-  load(API+'/tracks/search?limit=25&app_name='+APP+'&query='+encodeURIComponent(t));
+var t=q.value.trim();
+if(!t)return;
+load(API+'/tracks/search?limit=25&app_name='+APP+'&query='+encodeURIComponent(t));
 }
 function render(){
-  list.innerHTML='';
-  songs.forEach(function(s,i){
-    var d=document.createElement('div');
-    d.className='s'+(i===cur?' on':'');
-    d.innerHTML='<img><div><div class="t"></div><div class="r"></div></div>';
-    d.querySelector('img').src=(s.artwork&&s.artwork['150x150'])||'';
-    d.querySelector('.t').textContent=s.title;
-    d.querySelector('.r').textContent=s.user?s.user.name:'';
-    d.onclick=function(){play(i)};
-    list.appendChild(d);
-  });
+list.innerHTML='';
+songs.forEach(function(s,i){
+var d=document.createElement('div');
+d.className='s'+(i===cur?' on':'');
+d.innerHTML='<img><div><div class="t"></div><div class="r"></div></div>';
+d.querySelector('img').src=(s.artwork&&s.artwork['150x150'])||'';
+d.querySelector('.t').textContent=s.title;
+d.querySelector('.r').textContent=s.user?s.user.name:'';
+d.onclick=function(){play(i)};
+list.appendChild(d);
+});
 }
 function play(i){
-  if(!songs.length)return;
-  cur=(i+songs.length)%songs.length;
-  a.src=API+'/tracks/'+songs[cur].id+'/stream?app_name='+APP;
-  a.play();
-  now.textContent=songs[cur].title+' - '+(songs[cur].user?songs[cur].user.name:'');
-  render();
+if(!songs.length)return;
+cur=(i+songs.length)%songs.length;
+a.src=API+'/tracks/'+songs[cur].id+'/stream?app_name='+APP;
+a.play();
+now.textContent=songs[cur].title+' - '+(songs[cur].user?songs[cur].user.name:'');
+render();
 }
 document.getElementById('go').onclick=search;
 q.onkeydown=function(e){if(e.key==='Enter')search()};
 pp.onclick=function(){
-  if(cur<0){play(0);return;}
-  if(a.paused)a.play();else a.pause();
+if(cur<0){play(0);return;}
+if(a.paused)a.play();else a.pause();
 };
 a.onplay=function(){pp.textContent='⏸'};
 a.onpause=function(){pp.textContent='▶'};
 a.onended=function(){play(cur+1)};
 document.getElementById('next').onclick=function(){play(cur+1)};
 document.getElementById('prev').onclick=function(){play(cur-1)};
-
 load(API+'/tracks/trending?limit=25&app_name='+APP);
 </script>
 </body>

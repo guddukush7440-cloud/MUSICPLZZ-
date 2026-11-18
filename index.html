@@ -4,98 +4,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09090b">
 <title>MUSICPLZZ</title>
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding-bottom:100px}
-h1{text-align:center;color:#1db954;padding:16px;margin:0}
-.bar{display:flex;gap:8px;padding:0 12px 12px}
-input{flex:1;padding:12px;border-radius:8px;border:0;background:#222;color:#fff;font-size:16px}
-#go{padding:12px 16px;border:0;border-radius:8px;background:#1db954;font-weight:bold}
-.s{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid #222}
-.s img{width:52px;height:52px;border-radius:6px;background:#222;object-fit:cover}
-.s .t{font-size:15px}
-.s .r{font-size:13px;color:#999}
-.s.on .t{color:#1db954;font-weight:bold}
-#msg{text-align:center;color:#999;padding:20px}
-#player{position:fixed;bottom:0;left:0;right:0;background:#1b1b1b;padding:10px;text-align:center}
-#player button{font-size:22px;margin:0 10px;padding:8px 16px;border:0;border-radius:8px;background:#1db954}
-#now{font-size:14px;margin-bottom:6px;color:#bbb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+*{box-sizing:border-box}
+body{margin:0;background:#09090b;color:white;font-family:Arial,sans-serif;padding-bottom:100px}
+header{padding:20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:27px;font-weight:900;letter-spacing:-1px}
+.logo span{color:#fa365b}
+button{cursor:pointer}
+.headbtn{background:#202027;color:white;border:0;border-radius:50%;padding:12px;font-size:18px}
+main{padding:12px 17px;max-width:800px;margin:auto}
+h2{font-size:22px}
+.hero{padding:25px;border-radius:20px;background:linear-gradient(130deg,#56152d,#1c1227,#17171d);margin-bottom:25px}
+.hero h1{font-size:33px;margin:10px 0}
+.hero p{color:#ddd;font-size:13px}
+.search{display:flex;gap:9px;margin:20px 0}
+input{min-width:0;flex:1;background:#202027;border:1px solid #35353c;color:white;padding:15px;border-radius:12px;font-size:15px}
+.primary{background:#fa365b;color:white;border:0;padding:14px 18px;border-radius:12px;font-weight:bold}
+.section{display:flex;justify-content:space-between;align-items:center;margin-top:25px}
+.section h2{font-size:19px}
+#results{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.track{background:#18181d;border-radius:13px;padding:9px;cursor:pointer;min-width:0}
+.track img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:9px}
+.track strong{display:block;font-size:13px;margin:8px 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track small{color:#aaa}
+#message{color:#aaa;font-size:13px;text-align:center;padding:15px}
+#player{margin-top:20px;background:#18181d;border-radius:15px;padding:12px}
+#video{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}
+#playing{font-size:13px;color:#ddd;margin:10px 0}
+#settings{display:none;position:fixed;inset:0;background:#09090bf5;z-index:10;padding:25px 18px;overflow:auto}
+.panel{max-width:500px;margin:35px auto;background:#19191f;border-radius:18px;padding:20px}
+.panel h2{margin-top:0}
+.panel p{color:#aaa;font-size:13px;line-height:1.5}
+.panel input{width:100%;margin:12px 0}
+.full{width:100%;margin-top:10px}
+.secondary{background:#303038;color:white;border:0;padding:13px;border-radius:10px}
+#status{font-size:12px;color:#aaa;margin-top:12px}
+@media(min-width:600px){#results{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-<h1>🎵 MUSICPLZZ</h1>
-<div class="bar">
-<input id="q" placeholder="Gaana ya artist search karo...">
-<button id="go">Search</button>
-</div>
-<div id="msg"></div>
-<div id="list"></div>
-<div id="player">
-<div id="now">Koi gaana nahi chal raha</div>
-<button id="prev">⏮</button>
-<button id="pp">▶</button>
-<button id="next">⏭</button>
-<audio id="a"></audio>
-</div>
-<script>
-var API='https://api.audius.co/v1';
-var APP='MUSICPLZZ';
-var songs=[],cur=-1;
-var a=document.getElementById('a'),list=document.getElementById('list');
-var q=document.getElementById('q'),msg=document.getElementById('msg');
-var pp=document.getElementById('pp'),now=document.getElementById('now');
 
-function load(url){
-msg.textContent='Dhoondh raha hoon...';
-list.innerHTML='';
-fetch(url)
-.then(function(r){return r.json()})
-.then(function(d){
-songs=(d.data||[]).filter(function(x){return x.is_streamable!==false});
-cur=-1;
-msg.textContent=songs.length?'':'Kuch nahi mila, dusra naam try karo';
-render();
-})
-.catch(function(){msg.textContent='Error aaya. Internet check karo.'});
+<header>
+<div class="logo">MUSIC<span>PLZZ</span></div>
+<button class="headbtn" onclick="openSettings()">⚙</button>
+</header>
+
+<main>
+<div class="hero">
+<small>YOUR MUSIC WORLD</small>
+<h1>Feel Every Beat.</h1>
+<p>Discover music for every mood.</p>
+</div>
+
+<div class="search">
+<input id="query" placeholder="Search Hindi, Bollywood, English...">
+<button class="primary" onclick="searchMusic()">Search</button>
+</div>
+
+<div class="section">
+<h2>Discover Music</h2>
+</div>
+<div id="results"></div>
+<div id="message">Add your YouTube API key in Settings to start.</div>
+
+<div id="player">
+<h3>Now Playing</h3>
+<iframe id="video" src="about:blank" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+<div id="playing">Choose a song to play</div>
+</div>
+</main>
+
+<div id="settings">
+<div class="panel">
+<h2>⚙ Settings</h2>
+<p>YouTube Data API v3</p>
+<p>Add your API key below. It will be saved on this device.</p>
+<input id="apiKey" type="password" placeholder="Paste YouTube API Key">
+<button class="primary full" onclick="saveKey()">Save API Key</button>
+<button class="secondary full" onclick="removeKey()">Remove API Key</button>
+<div id="status"></div>
+<button class="secondary full" onclick="closeSettings()">Close Settings</button>
+</div>
+</div>
+
+<script>
+let key=localStorage.getItem('musicplzz_api')||'';
+let recent=JSON.parse(localStorage.getItem('musicplzz_recent')||'[]');
+
+function openSettings(){
+document.getElementById('settings').style.display='block';
+document.getElementById('apiKey').value=key;
+document.getElementById('status').textContent=key?'API key saved on this device':'No API key added';
 }
-function search(){
-var t=q.value.trim();
-if(!t)return;
-load(API+'/tracks/search?limit=25&app_name='+APP+'&query='+encodeURIComponent(t));
+function closeSettings(){
+document.getElementById('settings').style.display='none';
 }
-function render(){
-list.innerHTML='';
-songs.forEach(function(s,i){
-var d=document.createElement('div');
-d.className='s'+(i===cur?' on':'');
-d.innerHTML='<img><div><div class="t"></div><div class="r"></div></div>';
-d.querySelector('img').src=(s.artwork&&s.artwork['150x150'])||'';
-d.querySelector('.t').textContent=s.title;
-d.querySelector('.r').textContent=s.user?s.user.name:'';
-d.onclick=function(){play(i)};
-list.appendChild(d);
+function saveKey(){
+key=document.getElementById('apiKey').value.trim();
+if(!key){alert('Please enter your API key');return}
+localStorage.setItem('musicplzz_api',key);
+document.getElementById('status').textContent='API key saved successfully';
+}
+function removeKey(){
+localStorage.removeItem('musicplzz_api');
+key='';
+document.getElementById('apiKey').value='';
+document.getElementById('status').textContent='API key removed';
+}
+async function searchMusic(){
+if(!key){
+openSettings();
+return;
+}
+let q=document.getElementById('query').value.trim();
+if(!q)return;
+let results=document.getElementById('results');
+let msg=document.getElementById('message');
+results.innerHTML='';
+msg.textContent='Searching music...';
+try{
+let url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=24&q='+encodeURIComponent(q)+'&key='+encodeURIComponent(key);
+let response=await fetch(url);
+let data=await response.json();
+if(data.error)throw Error(data.error.message);
+let items=data.items||[];
+msg.textContent=items.length?items.length+' results found':'No songs found';
+items.forEach(item=>{
+let id=item.id.videoId;
+let sn=item.snippet;
+let card=document.createElement('div');
+card.className='track';
+let img=document.createElement('img');
+img.src=sn.thumbnails.high?.url||sn.thumbnails.default?.url||'';
+img.alt=sn.title;
+let title=document.createElement('strong');
+title.textContent=sn.title;
+let channel=document.createElement('small');
+channel.textContent=sn.channelTitle;
+card.append(img,title,channel);
+card.onclick=()=>playSong(id,sn.title);
+results.appendChild(card);
 });
+}catch(e){
+msg.textContent='Error: '+e.message;
 }
-function play(i){
-if(!songs.length)return;
-cur=(i+songs.length)%songs.length;
-a.src=API+'/tracks/'+songs[cur].id+'/stream?app_name='+APP;
-a.play();
-now.textContent=songs[cur].title+' - '+(songs[cur].user?songs[cur].user.name:'');
-render();
 }
-document.getElementById('go').onclick=search;
-q.onkeydown=function(e){if(e.key==='Enter')search()};
-pp.onclick=function(){
-if(cur<0){play(0);return;}
-if(a.paused)a.play();else a.pause();
-};
-a.onplay=function(){pp.textContent='⏸'};
-a.onpause=function(){pp.textContent='▶'};
-a.onended=function(){play(cur+1)};
-document.getElementById('next').onclick=function(){play(cur+1)};
-document.getElementById('prev').onclick=function(){play(cur-1)};
-load(API+'/tracks/trending?limit=25&app_name='+APP);
+function playSong(id,title){
+document.getElementById('video').src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1';
+document.getElementById('playing').textContent=title;
+recent.unshift({id,title});
+recent=recent.slice(0,10);
+localStorage.setItem('musicplzz_recent',JSON.stringify(recent));
+}
+document.getElementById('query').addEventListener('keydown',e=>{
+if(e.key==='Enter')searchMusic();
+});
 </script>
 </body>
 </html>
